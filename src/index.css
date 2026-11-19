@@ -1,0 +1,164 @@
+@import 'tailwindcss';
+
+/* ------------------------------------------------------------------ *
+ * Design tokens — see implementation.md §2
+ *
+ * CONTRAST RULE (hard constraint, not a suggestion):
+ *   --color-gold is 2.4:1 on white and FAILS WCAG AA for text.
+ *   Use it ONLY for rules, icons, numerals and display type ≥24px.
+ *   Any text below 24px must use gold-deep / slate / navy / ink.
+ * ------------------------------------------------------------------ */
+@theme {
+  --color-ivory: #fffdf8;
+  --color-ivory-warm: #faf6ee;
+  --color-gold: #c8a24a;
+  --color-gold-soft: #e4d3a8;
+  --color-gold-deep: #8c6d2f;
+  --color-navy: #12284a;
+  --color-navy-soft: #1d3a66;
+  --color-slate: #4a5d78;
+  --color-ink: #1a1a18;
+
+  --font-display: 'Cormorant Garamond', ui-serif, Georgia, serif;
+  --font-body: 'Jost', ui-sans-serif, system-ui, sans-serif;
+
+  --tracking-kicker: 0.3em;
+  --tracking-button: 0.18em;
+
+  --ease-elegant: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* ------------------------------------------------------------------ *
+ * Base
+ * ------------------------------------------------------------------ */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-ivory);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    font-weight: 400;
+    font-size: 1.0625rem;
+    line-height: 1.75;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    font-weight: 300;
+    color: var(--color-navy);
+    line-height: 1.1;
+  }
+
+  ::selection {
+    background: var(--color-gold-soft);
+    color: var(--color-navy);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-gold-deep);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * Custom utilities
+ * ------------------------------------------------------------------ */
+
+/* The arch — flat bottom, domed top. The site's signature image mask. */
+@utility arch {
+  border-radius: 50% 50% 0 0 / 30% 30% 0 0;
+  overflow: hidden;
+}
+
+@utility arch-deep {
+  border-radius: 50% 50% 0 0 / 45% 45% 0 0;
+  overflow: hidden;
+}
+
+@utility kicker {
+  font-family: var(--font-body);
+  font-weight: 300;
+  font-size: 0.8125rem;
+  letter-spacing: var(--tracking-kicker);
+  text-transform: uppercase;
+  color: var(--color-gold-deep);
+}
+
+/* Gold-gradient stand-in shown when an image URL fails to load. */
+@utility img-fallback {
+  background:
+    linear-gradient(135deg, #faf6ee 0%, #f0e6cf 45%, #e4d3a8 100%);
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .text-pretty {
+    text-wrap: pretty;
+  }
+
+  /* Scroll reveal — driven by useReveal().
+     Hidden only when JS is present (the `js` class is set by an inline script
+     in index.html), so a JS failure leaves a static page rather than a blank
+     one. Disabled entirely under prefers-reduced-motion, below. */
+  .js .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition:
+      opacity 0.7s var(--ease-elegant),
+      transform 0.7s var(--ease-elegant);
+    will-change: opacity, transform;
+  }
+
+  .js .reveal.is-visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Hides the native scrollbar on the gallery filter rail. */
+  .no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * Reduced motion — kills every transform and transition site-wide
+ * ------------------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .js .reveal,
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
